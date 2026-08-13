@@ -8,11 +8,14 @@ builder.Services.AddCorsPolicy(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 builder.Services.AddOpenApiDocumentation(builder.Configuration);
 
+builder.Services.AddDatabaseContext(builder.Configuration);
+
 var app = builder.Build();
+
+await app.CheckDatabaseConnectionAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
