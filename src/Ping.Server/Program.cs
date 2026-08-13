@@ -1,4 +1,9 @@
+using Ping.Server.Common.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// cors policy
+builder.Services.AddCorsPolicy(builder.Configuration);
 
 // Add services to the container.
 
@@ -13,6 +18,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseCors("PingCorsPolicy");
 
 app.UseHttpsRedirection();
 
