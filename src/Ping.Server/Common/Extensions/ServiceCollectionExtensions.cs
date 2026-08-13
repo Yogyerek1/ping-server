@@ -1,3 +1,7 @@
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore;
+using Ping.Server.Data;
+
 namespace Ping.Server.Common.Extensions;
 
 public static class ServiceCollectionExtensions
@@ -37,5 +41,37 @@ public static class ServiceCollectionExtensions
         });
 
         return services;
+    }
+
+    public static IServiceCollection AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        services.AddDbContext<PingDbContext>(options =>
+            options.UseNpgsql(connectionString));
+        
+        return services;
+    }
+
+    public static async Task CheckDatabaseConnectionAsync(this WebApplication app)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<PingDbContext>();
+            try
+            {
+                var canConnect = await db.Database.CanConnectAsync();
+
+                if (canConnect)
+                    Console.WriteLine("[INFO] -> Database connection successful.");
+                else
+                    throw new InvalidOperationException("PostgreSQL database is unreachable. Check connection string and server status.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[FATAL] -> Database connection failed.");
+                throw new InvalidOperationException("Failed to connect to the database during startup.", ex);
+            }
+        }
     }
 }
