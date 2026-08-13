@@ -22,4 +22,20 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
+            {
+                document.Info.Title = "Ping API";
+                document.Info.Version = configuration["Version"] ?? "v0.0.0";
+                document.Info.Description = "A self-hosted, decentralized backend for secure, modern communication.";
+                return Task.CompletedTask;
+            });
+        });
+
+        return services;
+    }
 }
