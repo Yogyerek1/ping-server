@@ -9,8 +9,10 @@ pipeline {
     }
 
     parameters {
-        string(name: 'POSTGRES_HOST_PORT', defaultValue: '5432', description: '')
-        string(name: 'API_HOST_PORT', defaultValue: '5276', description: '')
+        string(name: 'POSTGRES_HOST_PORT', defaultValue: '5432', description: 'Port mapped on the host machine for the PostgreSQL database.')
+        string(name: 'API_HOST_PORT', defaultValue: '5276', description: 'Port mapped on the host machine for the Web API.')
+        string(name: 'NETWORK', defaultValue: '', description: 'Docker network name. If empty, Docker Compose uses the default network.')
+        booleanParam(name: 'HAS_EXTERNAL_NETWORK', defaultValue: false, description: 'Check if the specified Docker network already exists on the host.')
     }
 
     stages {
@@ -26,12 +28,21 @@ pipeline {
                     string(credentialsId: 'ping-db-password', variable: 'DB_PASSWORD')
                 ]) {
                     sh '''
+                        if [ -n "${NETWORK}" ]; then
+                            HAS_EXT="true"
+                        else
+                            HAS_EXT="false"
+                        fi
+
                         cat > .env <<EOF
 POSTGRES_DB=${POSTGRES_DB}
 POSTGRES_USER=${POSTGRES_USER}
 POSTGRES_PASSWORD=${DB_PASSWORD}
 POSTGRES_HOST_PORT=${POSTGRES_HOST_PORT}
+API_HOST_PORT=${API_HOST_PORT}
 ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+NETWORK=${NETWORK}
+HAS_EXTERNAL_NETWORK=${HAS_EXT}
 EOF
                     '''
                 }
