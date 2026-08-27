@@ -1,0 +1,50 @@
+services:
+  ping.db:
+    image: postgres:17-alpine
+    container_name: ping_postgres
+    restart: always
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    
+    volumes:
+      - postgres_ping_data:/var/lib/postgresql/data
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  ping.api:
+    build:
+      context: .
+      dockerfile: src/Ping.Server/Dockerfile
+    container_name: ping_api
+    restart: always
+
+    ports:
+      - "${API_HOST_PORT:-5276}:8080"
+    
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+      - ConnectionStrings__DefaultConnection=Host=ping.db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    
+    depends_on:
+      ping.db:
+        condition: service_healthy
+    
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    
+volumes:
+  postgres_ping_data:
