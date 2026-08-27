@@ -20,6 +20,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    
+    networks:
+      - custom-network
   
   ping.api:
     build:
@@ -45,6 +48,14 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+    networks:
+      - custom-network
     
 volumes:
   postgres_ping_data:
+
+networks:
+  custom-network:
+    name: ${NETWORK:-ping-default}
+    external: ${HAS_EXTERNAL_NETWORK:-false}
