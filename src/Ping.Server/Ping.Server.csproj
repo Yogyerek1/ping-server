@@ -19,4 +19,10 @@
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.19" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Shared\Services\Email\Templates\*.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

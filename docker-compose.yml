@@ -37,6 +37,13 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
       - ConnectionStrings__DefaultConnection=Host=ping.db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - SmtpSettings__Host=${SMTP_HOST}
+      - SmtpSettings__Port=${SMTP_PORT:-587}
+      - SmtpSettings__SenderName=${SMTP_SENDER_NAME}
+      - SmtpSettings__SenderEmail=${SMTP_SENDER_EMAIL}
+      - SmtpSettings__Username=${SMTP_USERNAME}
+      - SmtpSettings__Password=${SMTP_PASSWORD}
+      - SmtpSettings__EnableSsl=${SMTP_ENABLE_SSL:-true}
     
     depends_on:
       ping.db:
