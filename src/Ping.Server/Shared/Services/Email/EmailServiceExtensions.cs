@@ -1,3 +1,6 @@
+using FluentEmail.Core;
+using FluentEmail.Razor;
+using FluentEmail.Smtp;
 using System.Net;
 using System.Net.Mail;
 using Ping.Server.Shared.Services.Email.Options;
