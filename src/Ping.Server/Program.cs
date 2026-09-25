@@ -1,4 +1,5 @@
 using Ping.Server.Common.Extensions;
+using Ping.Server.Shared.Services.Email;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApiDocumentation(builder.Configuration);
 
 builder.Services.AddDatabaseContext(builder.Configuration);
+
+builder.Services.AddEmailInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

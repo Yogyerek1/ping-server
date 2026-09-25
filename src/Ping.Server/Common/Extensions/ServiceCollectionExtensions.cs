@@ -1,6 +1,9 @@
-using System.Reflection.Metadata.Ecma335;
+using System.Net;
+using System.Net.Mail;
 using Microsoft.EntityFrameworkCore;
 using Ping.Server.Data;
+using Ping.Server.Shared.Services.Email;
+using Ping.Server.Shared.Services.Email.Options;
 
 namespace Ping.Server.Common.Extensions;
 
