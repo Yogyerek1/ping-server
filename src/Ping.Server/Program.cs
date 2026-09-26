@@ -1,4 +1,5 @@
 using Ping.Server.Common.Extensions;
+using Ping.Server.Features.Authentication;
 using Ping.Server.Shared.Services.Email;
 using Scalar.AspNetCore;
 
@@ -14,11 +15,14 @@ builder.Services.AddOpenApiDocumentation(builder.Configuration);
 
 builder.Services.AddDatabaseContext(builder.Configuration);
 
+builder.Services.AddAuthenticationInfrastructure();
+
 builder.Services.AddEmailInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
 await app.CheckDatabaseConnectionAsync();
+await app.ApplyMigrationsAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -31,6 +35,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("PingCorsPolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

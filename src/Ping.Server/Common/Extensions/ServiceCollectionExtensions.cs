@@ -56,6 +56,46 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static async Task ApplyMigrationsAsync(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<PingDbContext>();
+        
+        try
+        {
+            var pendingMigrations = (await db.Database
+                .GetPendingMigrationsAsync())
+                .ToList();
+
+            if (pendingMigrations.Count == 0)
+            {
+                Console.WriteLine("[INFO] -> Database is already up to date.");
+                return;
+            }
+
+            Console.WriteLine($"[INFO] -> Applying {pendingMigrations.Count} database migration(s)...");
+
+            await db.Database.MigrateAsync();
+
+            Console.WriteLine("[INFO] -> Database migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[FATAL] -> Database migration failed.");
+            Console.WriteLine($"[ERROR] -> {ex.Message}");
+
+            if (ex.InnerException is not null)
+            {
+                Console.WriteLine($"[ERROR] -> Inner exception: {ex.InnerException.Message}");
+            }
+
+            throw new InvalidOperationException(
+                "Failed to apply database migrations during startup.",
+                ex
+            );
+        }
+    }
+
     public static async Task CheckDatabaseConnectionAsync(this WebApplication app)
     {
         using (var scope = app.Services.CreateScope())
