@@ -15,7 +15,7 @@ builder.Services.AddOpenApiDocumentation(builder.Configuration);
 
 builder.Services.AddDatabaseContext(builder.Configuration);
 
-builder.Services.AddAuthenticationInfrastructure();
+builder.Services.AddAuthenticationInfrastructure(builder.Configuration);
 
 builder.Services.AddEmailInfrastructure(builder.Configuration);
 
