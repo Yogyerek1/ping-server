@@ -89,6 +89,7 @@ public static class AuthenticationServiceExtensions
         .AddDefaultTokenProviders();
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         return services;
     }
