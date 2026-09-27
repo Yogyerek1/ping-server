@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Ping.Server.Features.Authentication.Contracts;
 using Ping.Server.Features.Authentication.Models;
+using Ping.Server.Features.Authentication.Options;
 
 namespace Ping.Server.Features.Authentication.Services;
 
@@ -8,13 +10,16 @@ public sealed class AuthenticationService : IAuthenticationService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly JwtOptions _jwtOptions;
 
     public AuthenticationService(
         UserManager<ApplicationUser> userManager,
-        IJwtTokenService jwtTokenService)
+        IJwtTokenService jwtTokenService,
+        IOptions<JwtOptions> jwtOptions)
     {
         _userManager = userManager;
         _jwtTokenService = jwtTokenService;
+        _jwtOptions = jwtOptions.Value;
     }
 
     public async Task<TokenResponse> RegisterAsync(
@@ -58,7 +63,7 @@ public sealed class AuthenticationService : IAuthenticationService
         return new TokenResponse
         {
             AccessToken = accessToken,
-            ExpiresInSeconds = 15 * 60
+            ExpiresInSeconds = _jwtOptions.AccessTokenMinutes * 60
         };
     }
 
@@ -97,7 +102,7 @@ public sealed class AuthenticationService : IAuthenticationService
         return new TokenResponse
         {
             AccessToken = accessToken,
-            ExpiresInSeconds = 15 * 60
+            ExpiresInSeconds = _jwtOptions.AccessTokenMinutes * 60
         };
     }
 }

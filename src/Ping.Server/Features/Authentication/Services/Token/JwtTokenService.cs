@@ -110,7 +110,12 @@ public sealed class JwtTokenService : IJwtTokenService
             ),
 
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+
+            ValidAlgorithms = new[]
+            {
+                SecurityAlgorithms.HmacSha256
+            }
         };
 
         var principal = tokenHandler.ValidateToken(
